@@ -85,7 +85,7 @@ def get_single_employee(employee_id):
         employee1 = Employee.query.get(employee_id)
         if employee1 is None:
             raise APIException("User not found", status_code=404)
-        db.session.delete(employee_id)
+        db.session.delete(employee1)
         db.session.commit()
         return "ok", 200
 
