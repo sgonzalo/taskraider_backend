@@ -16,6 +16,10 @@ class Employee(db.Model):
     full_name = db.Column(db.String(120), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=True, nullable=False)
+    
+    def __repr__(self):
+        return '<Employee %r>' % self.full_name
+    
     def serialize(self):
         return {
             "full_name": self.full_name,

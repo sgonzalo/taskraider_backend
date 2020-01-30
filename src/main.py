@@ -50,6 +50,48 @@ def get_Employee():
     return "Invalid Method", 404
 
 @app.route('/employee/<int:employee_id>', methods= ['PUT', 'GET', 'DELETE'])
+def get_single_employee(employee_id):
+
+    #REQUEST METHOD PUT
+    if request.method == "PUT":
+        body = request.get_json()
+
+        if body is None:
+            raise APIException("You need to specify the request body as a json object", status_code=400)
+        employee1 = Employee.query.get(employee_id)
+       
+        if employee1 is None:
+            raise APIException("User not found", status_code=404)
+        
+        if "full_name" in body:
+            employee1.full_name= body["full_name"]
+        if "email" in body:
+            employee1.email= body["email"]
+        if "password" in body:
+            employee1.password= body["password"]
+        db.session.commit()
+
+        return jsonify(employee1.serialize()), 200
+
+    # GET request
+    if request.method == 'GET':
+        employee1 = Employee.query.get(employee_id)
+        if employee1 is None:
+            raise APIException("User not found", status_code=404)
+        return jsonify(employee1.serialize()), 200
+    
+    #DELETE METHHOD
+    if request.method == "DELETE":
+        employee1 = Employee.query.get(employee_id)
+        if employee1 is None:
+            raise APIException("User not found", status_code=404)
+        db.session.delete(employee_id)
+        db.session.commit()
+        return "ok", 200
+
+    return "Invalid Method", 404
+        
+       
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
