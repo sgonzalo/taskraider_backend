@@ -18,7 +18,7 @@ db = SQLAlchemy()
 #         }
 class Employee(db.Model):
     __tablename__= "employee"
-    children = relationship("EmployeeProfile")
+    profile = relationship("EmployeeProfile")
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(120), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -55,7 +55,7 @@ class EmployeeProfile(db.Model):
 class Employer(db.Model):
     __tablename__= "employer"
     id = db.Column(db.Integer, primary_key=True)
-    profile = db.relationship("EmployerProfile")
+    #profile = db.relationship("EmployerProfile")
     full_name = db.Column(db.String(120), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=True, nullable=False)
@@ -74,7 +74,7 @@ class Employer(db.Model):
 
 class EmployerProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    company_info = db.Column(db.String(250), unique=True, nullable=False)
+    company_info = db.Column(db.String(500), unique=True, nullable=False)
     employer_id = Column(Integer, ForeignKey('employer.id'))
 
     def __repr__(self):
@@ -85,4 +85,32 @@ class EmployerProfile(db.Model):
             "company_info": self.skills,
             "id": self.id
         }
+
+# class JobPosting(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     job_title = db.Column(db.String(250), unique=True, nullable=False)
+#     job_description= db.Column(db.String(500), unique=True, nullable=False)
+#     zip_code = db.Column(db.String(5), unique=True, nullable=False)
+#     job_date = db.Column(db.String(10), unique=True, nullable=False)
+#     skills_needed = db.Column(db.String(500), unique=True, nullable=False)
+#     hours_expected = db.Column(db.String(50), unique=True, nullable=False)
+#     payment = db.Column(db.String(250), unique=True, nullable=False)
+#     employer_id = Column(Integer, ForeignKey('jobposting.id'))
+#     #createjobposting_id = Column(Integer, ForeignKey('createjobposting.id'))
+
+#     def __repr__(self):
+#         return '<JobPosting %r>' % self.full_name
+    
+#     def serialize(self):
+#         return {
+#             "job_title": self.job_title,
+#             "job_description": self.job_description,
+#             "zip_code": self.zip_code,
+#             "job_date": self.job_date,
+#             "skills_needed": self.skills_needed,
+#             "hours_expected": self.hours_expected,
+#             "payment": self.payment,
+#             "id": self.id
+#         }
+
 

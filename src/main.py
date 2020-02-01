@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
-from models import db, Employee, Employer, EmployeeProfile, EmployerProfile
+from models import db, Employee, Employer, EmployeeProfile, EmployerProfile #JobPosting
 #from models import Person
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -17,21 +17,29 @@ MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 
-# Handle/serialize errors like a JSON object
+##### Handle/serialize errors like a JSON object #####
+
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
-# generate sitemap with all your endpoints
+##### generate sitemap with all your endpoints #####
+
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
- #######################################
+
+ ################################################################
+ ################################################################
  #EMPLOYEE
- #######################################   
+ ################################################################
+ ################################################################   
+
 @app.route('/employee', methods=['POST', 'GET'])
 def get_Employee():
-#Create a Employee and retrieve all Employees!!
+
+##### Create a Employee and retrieve all Employees #####
+ 
     if request.method == 'POST':
         body = request.get_json()
         if body is None:
@@ -47,7 +55,8 @@ def get_Employee():
         db.session.commit()
         return "ok", 200
     
-    # GET request
+    ###### GET REQUEST METHOD ######
+
     if request.method == 'GET':
         all_employee = Employee.query.all()
         all_employee = list(map(lambda x: x.serialize(), all_employee))
@@ -57,7 +66,8 @@ def get_Employee():
 @app.route('/employee/<int:employee_id>', methods= ['PUT', 'GET', 'DELETE'])
 def get_single_employee(employee_id):
 
-    #REQUEST METHOD PUT
+    ###### REQUEST METHOD PUT ######
+
     if request.method == "PUT":
         body = request.get_json()
 
@@ -78,14 +88,16 @@ def get_single_employee(employee_id):
 
         return jsonify(employee1.serialize()), 200
 
-    # GET request
+    ###### GET REQUEST METHOD ######
+
     if request.method == 'GET':
         employee1 = Employee.query.get(employee_id)
         if employee1 is None:
             raise APIException("User not found", status_code=404)
         return jsonify(employee1.serialize()), 200
     
-    #DELETE METHHOD
+    ###### DELETE METHOD ######
+
     if request.method == "DELETE":
         employee1 = Employee.query.get(employee_id)
         if employee1 is None:
@@ -98,7 +110,9 @@ def get_single_employee(employee_id):
 
 @app.route('/employeeprofile', methods=['POST', 'GET'])
 def get_EmployeeProfile():
-#Create a EmployeeProfile and retrieve all EmployeeProfiles!!
+
+##### Create a EmployeeProfile and retrieve all EmployeeProfiles ######
+
     if request.method == 'POST':
         body = request.get_json()
         if body is None:
@@ -112,7 +126,8 @@ def get_EmployeeProfile():
         db.session.commit()
         return "ok", 200
     
-    # GET request
+    ##### GET REQUEST METHOD #####
+
     if request.method == 'GET':
         all_employeeprofile = EmployeeProfile.query.all()
         all_employeeprofile = list(map(lambda x: x.serialize(), all_employeeprofile))
@@ -122,7 +137,8 @@ def get_EmployeeProfile():
 @app.route('/employeeprofile/<int:employeeprofile_id>', methods= ['PUT', 'GET', 'DELETE'])
 def get_single_employeeprofile(employeeprofile_id):
 
-    #REQUEST METHOD PUT
+    ##### REQUEST METHOD PUT #####
+
     if request.method == "PUT":
         body = request.get_json()
 
@@ -141,14 +157,16 @@ def get_single_employeeprofile(employeeprofile_id):
 
         return jsonify(employeeprofile1.serialize()), 200
 
-    # GET request
+    ##### GET REQUEST METHOD ######
+
     if request.method == 'GET':
         employeeprofile1 = Employee.query.get(employee_id)
         if employeeprofile1 is None:
             raise APIException("User not found", status_code=404)
         return jsonify(employeeprofile1.serialize()), 200
     
-    #DELETE METHHOD
+    ##### DELETE METHHOD #####
+
     if request.method == "DELETE":
         employeeprofile1 = Employeeprofile.query.get(employeeprofile_id)
         if employeeprofile1 is None:
@@ -159,14 +177,16 @@ def get_single_employeeprofile(employeeprofile_id):
 
     return "Invalid Method", 404
 
- #######################################
+ ############################################################
+ ############################################################
  #EMPLOYER
- ####################################### 
+ ############################################################
+ ############################################################ 
 
 @app.route('/employer', methods=['POST', 'GET'])
 def get_Employer():
 
-#Create a Employer and retrieve all Employer!!
+##### Create a Employer and retrieve all Employers ######
 
     if request.method == 'POST':
         body = request.get_json()
@@ -183,7 +203,8 @@ def get_Employer():
         db.session.commit()
         return "ok", 200
     
-    # GET request
+    #### GET REQUEST METHOD #####
+
     if request.method == 'GET':
         all_employer = Employer.query.all()
         all_employer = list(map(lambda x: x.serialize(), all_employer))
@@ -195,7 +216,8 @@ def get_Employer():
 @app.route('/employer/<int:employer_id>', methods= ['PUT', 'GET', 'DELETE'])
 def get_single_employer(employer_id):
 
-    #REQUEST METHOD PUT
+    #### #REQUEST METHOD PUT #####
+
     if request.method == "PUT":
         body = request.get_json()
 
@@ -216,14 +238,16 @@ def get_single_employer(employer_id):
 
         return jsonify(employer1.serialize()), 200
 
-    # GET request
+    ##### GET REQUEST METHOD #####
+
     if request.method == 'GET':
         employer1 = Employer.query.get(employer_id)
         if employer1 is None:
             raise APIException("User not found", status_code=404)
         return jsonify(employer1.serialize()), 200
     
-    #DELETE METHHOD
+    ##### DELETE METHHOD ######
+
     if request.method == "DELETE":
         employer1 = Employer.query.get(employer_id)
         if employer1 is None:
@@ -236,7 +260,9 @@ def get_single_employer(employer_id):
 
 @app.route('/employerprofile', methods=['POST', 'GET'])
 def get_EmployerProfile():
-#Create an EmployerProfile and retrieve all EmployerProfiles!!
+
+##### Create an EmployerProfile and retrieve all EmployerProfiles #####
+
     if request.method == 'POST':
         body = request.get_json()
         if body is None:
@@ -249,7 +275,8 @@ def get_EmployerProfile():
         db.session.commit()
         return "ok", 200
     
-    # GET request
+    ##### GET REQUEST METHOD ######
+
     if request.method == 'GET':
         all_employerprofile = EmployerProfile.query.all()
         all_employerprofile = list(map(lambda x: x.serialize(), all_employerprofile))
@@ -259,7 +286,8 @@ def get_EmployerProfile():
 @app.route('/employerprofile/<int:employerprofile_id>', methods= ['PUT', 'GET', 'DELETE'])
 def get_single_employerprofile(employerprofile_id):
 
-    #REQUEST METHOD PUT
+    ##### REQUEST METHOD PUT ######
+
     if request.method == "PUT":
         body = request.get_json()
 
@@ -276,14 +304,16 @@ def get_single_employerprofile(employerprofile_id):
 
         return jsonify(employerprofile1.serialize()), 200
 
-    # GET request
+    ##### GET REQUEST METHOD #####
+
     if request.method == 'GET':
         employerprofile1 = EmployerProfile.query.get(employer_id)
         if employerprofile1 is None:
             raise APIException("User not found", status_code=404)
         return jsonify(employeeprofile1.serialize()), 200
     
-    #DELETE METHHOD
+    ##### DELETE METHOD #####
+
     if request.method == "DELETE":
         employerprofile1 = EmployerProfile.query.get(employerprofile_id)
         if employerprofile1 is None:
@@ -297,6 +327,105 @@ def get_single_employerprofile(employerprofile_id):
 
      
 # this only runs if `$ python src/main.py` is executed
+
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)
+
+##################################################################
+##################################################################
+ #Job Posting (Employer)
+##################################################################
+##################################################################
+
+# @app.route('/jobposting', methods=['POST', 'GET'])
+# def jobposting():
+
+# ##### Create a Job Posting and retrieve all job posts #####
+
+#     if request.method == 'POST':
+#         body = request.get_json()
+#         if body is None:
+#             raise APIException("You need to specify the request body as a json object", status_code=400)
+#         if "job_title" not in body:
+#             raise APIException('You need to specify the job_title', status_code=400)
+#         if 'job_description' not in body:
+#             raise APIException('You need to specify the job_description', status_code=400)
+#         if 'zip_code' not in body:
+#             raise APIException('You need to specify the zip_code', status_code=400)
+#         if 'job_date' not in body:
+#             raise APIException('You need to specify the job_date', status_code=400)
+#         if 'skills_needed' not in body:
+#             raise APIException('You need to specify the skills_needed', status_code=400)
+#         if 'hours_expected' not in body:
+#             raise APIException('You need to specify the hours_expected', status_code=400)
+#         if 'payment' not in body:
+#             raise APIException('You need to specify the payment', status_code=400)
+#         jobposting1 = JobPosting(job_title=body['job_title'], job_description = body['job_description'], zip_code = body['zip_code'], job_date = body['job_date'], skills_needed = body['skills_needed'], hours_expected = body['hours_expected'], payment = body['payment'])
+#         db.session.add(employer1)
+#         db.session.commit()
+#         return "ok", 200
+    
+#     ##### GET REQUEST METHOD #####
+
+#     if request.method == 'GET':
+#         all_jobposting = JobPosting.query.all()
+#         all_jobposting = list(map(lambda x: x.serialize(), all_jobposting))
+#         return jsonify(all_jobposting), 200
+    
+#     return "Invalid Method", 404
+
+
+# @app.route('/jobposting/<int:jobposting_id>', methods= ['PUT', 'GET', 'DELETE'])
+# def get_single_job_posting(jobposting_id):
+
+#     ##### #REQUEST METHOD PUT ######
+
+#     if request.method == "PUT":
+#         body = request.get_json()
+
+#         if body is None:
+#             raise APIException("You need to specify the request body as a json object", status_code=400)
+#         jobposting1 = JobPosting.query.get(jobposting_id)
+       
+#         if jobposting1 is None:
+#             raise APIException("User not found", status_code=404)
+        
+#         if "job_title" in body:
+#             jobposting1.job_title= body["job_title"]
+#         if "job_description" in body:
+#             jobposting1.job_description= body["job_description"]
+#         if "zip_code" in body:
+#             jobposting1.zip_code= body["zip_code"]
+#         if "job_date" in body:
+#             jobposting1.job_date= body["job_date"]
+#         if "skills_needed" in body:
+#             jobposting1.skills_needed= body["skills_needed"]
+#         if "hours_expected" in body:
+#             jobposting1.hours_expected= body["hours_expected"]
+#         if "payment" in body:
+#             jobposting1.payment= body["payment"]
+        
+#         db.session.commit()
+
+#         return jsonify(jobposting1.serialize()), 200
+
+#     ###### GET REQUEST METHOD ######
+
+#     if request.method == 'GET':
+#         jobposting1 = JobPosting.query.get(jobposting_id)
+#         if jobposting1 is None:
+#             raise APIException("User not found", status_code=404)
+#         return jsonify(jobposting1.serialize()), 200
+    
+#     ###### DELETE REQUEST METHOD ######
+
+#     if request.method == "DELETE":
+#         jobposting1 = JobPosting.query.get(jobposting_id)
+#         if jobposting1 is None:
+#             raise APIException("User not found", status_code=404)
+#         db.session.delete(jobposting1)
+#         db.session.commit()
+#         return "ok", 200
+
+#     return "Invalid Method", 404
