@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
-from models import db, Employee, Employer, EmployeeProfile, EmployerProfile #JobPosting
+from models import db, User, Company, CompanyProfile, UserProfile #JobPosting
 #from models import Person
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -31,15 +31,164 @@ def sitemap():
 
  ################################################################
  ################################################################
+ #SINUP
+ ################################################################
+ ################################################################
+
+@app.route('/signup', methods=['POST', 'GET'])
+def get_Signup():
+
+##### Sign Up #####
+
+    if request.method == 'POST':
+        body = request.get_json()
+        if body is None:
+            raise APIException("You need to specify the request body as a json object", status_code=400)
+        if 'email' not in body:
+            raise APIException('You need to specify the email', status_code=400)
+        if 'password' not in body:
+            body['password'] = None
+        signup1 = Signup(email = body['email'], password = body['password'])
+        db.session.add(signup1)
+        db.session.commit()
+        return "ok", 200
+
+    ###### GET REQUEST METHOD ######
+
+    if request.method == 'GET':
+        all_signup = Signup.query.all()
+        all_signup = list(map(lambda x: x.serialize(), all_signup))
+        return jsonify(all_signup), 200
+    return "Invalid Method", 404
+
+
+@app.route('/signup/<int:signup_id>', methods= ['PUT', 'GET', 'DELETE'])
+def get_single_signup(signup_id):
+
+    ###### REQUEST METHOD PUT ######
+
+    if request.method == "PUT":
+        body = request.get_json()
+
+        if body is None:
+            raise APIException("You need to specify the request body as a json object", status_code=400)
+        signup1 = Signup.query.get(signup_id)
+       
+        if signup1 is None:
+            raise APIException("User not found", status_code=404)
+    
+        if "email" in body:
+            signup1.email= body["email"]
+        if "password" in body:
+            signup1.password= body["password"]
+        db.session.commit()
+
+        return jsonify(signup1.serialize()), 200
+
+    ###### GET REQUEST METHOD ######
+
+    if request.method == 'GET':
+        signup1 = Signup.query.get(signup_id)
+        if signup1 is None:
+            raise APIException("User not found", status_code=404)
+        return jsonify(signup1.serialize()), 200
+    
+    ###### DELETE METHOD ######
+
+    if request.method == "DELETE":
+        signup1 = Signup.query.get(signup_id)
+        if signup1 is None:
+            raise APIException("User not found", status_code=404)
+        db.session.delete(signup1)
+        db.session.commit()
+        return "ok", 200
+
+    return "Invalid Method", 404 
+
+ ################################################################
+ ################################################################
+ #LOGIN
+ ################################################################
+ ################################################################ 
+
+@app.route('/login', methods=['POST', 'GET'])
+def get_Login():
+
+##### USER LOGIN #####
+
+    if request.method == 'POST':
+        body = request.get_json()
+        if body is None:
+            raise APIException("You need to specify the request body as a json object", status_code=400)
+        if 'email' not in body:
+            raise APIException('You need to specify the email', status_code=400)
+        if 'password' not in body:
+            body['password'] = None
+        login1 = Login(email = body['email'], password = body['password'])
+        db.session.add(login1)
+        db.session.commit()
+        return "ok", 200
+
+    ###### GET REQUEST METHOD ######
+
+    if request.method == 'GET':
+        all_login = Login.query.all()
+        all_login = list(map(lambda x: x.serialize(), all_login))
+        return jsonify(all_login), 200
+    return "Invalid Method", 404
+
+    ###### REQUEST METHOD PUT ######
+
+    if request.method == "PUT":
+        body = request.get_json()
+
+        if body is None:
+            raise APIException("You need to specify the request body as a json object", status_code=400)
+        login1 = Login.query.get(login_id)
+       
+        if login1 is None:
+            raise APIException("User not found", status_code=404)
+    
+        if "email" in body:
+            login1.email= body["email"]
+        if "password" in body:
+            login1.password= body["password"]
+        db.session.commit()
+
+        return jsonify(login1.serialize()), 200
+
+    ###### GET REQUEST METHOD ######
+
+    if request.method == 'GET':
+        login1 = Login.query.get(login_id)
+        if login1 is None:
+            raise APIException("User not found", status_code=404)
+        return jsonify(login1.serialize()), 200
+    
+    ###### DELETE METHOD ######
+
+    if request.method == "DELETE":
+        login1 = Login.query.get(login_id)
+        if login1 is None:
+            raise APIException("User not found", status_code=404)
+        db.session.delete(login1)
+        db.session.commit()
+        return "ok", 200
+
+    return "Invalid Method", 404 
+
+
+ ################################################################
+ ################################################################
  #EMPLOYEE
  ################################################################
  ################################################################   
 
-@app.route('/employee', methods=['POST', 'GET'])
-def get_Employee():
+@app.route('/user', methods=['POST', 'GET'])
+def get_User():
 
-##### Create a Employee and retrieve all Employees #####
- 
+##### Create a USER and retrieve all Users #####
+
     if request.method == 'POST':
         body = request.get_json()
         if body is None:
@@ -50,21 +199,21 @@ def get_Employee():
             raise APIException('You need to specify the email', status_code=400)
         if 'password' not in body:
             body['password'] = None
-        employee1 = Employee(full_name=body['full_name'], email = body['email'], password = body['password'])
-        db.session.add(employee1)
+        user1 = User(full_name=body['full_name'], email = body['email'], password = body['password'])
+        db.session.add(user1)
         db.session.commit()
         return "ok", 200
     
     ###### GET REQUEST METHOD ######
 
     if request.method == 'GET':
-        all_employee = Employee.query.all()
-        all_employee = list(map(lambda x: x.serialize(), all_employee))
-        return jsonify(all_employee), 200
+        all_user = User.query.all()
+        all_user = list(map(lambda x: x.serialize(), all_user))
+        return jsonify(all_user), 200
     return "Invalid Method", 404
 
-@app.route('/employee/<int:employee_id>', methods= ['PUT', 'GET', 'DELETE'])
-def get_single_employee(employee_id):
+@app.route('/user/<int:user_id>', methods= ['PUT', 'GET', 'DELETE'])
+def get_single_user(user_id):
 
     ###### REQUEST METHOD PUT ######
 
@@ -73,45 +222,45 @@ def get_single_employee(employee_id):
 
         if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
-        employee1 = Employee.query.get(employee_id)
+        user1 = User.query.get(user_id)
        
-        if employee1 is None:
+        if user1 is None:
             raise APIException("User not found", status_code=404)
         
         if "full_name" in body:
-            employee1.full_name= body["full_name"]
+            user1.full_name= body["full_name"]
         if "email" in body:
-            employee1.email= body["email"]
+            user1.email= body["email"]
         if "password" in body:
-            employee1.password= body["password"]
+            user1.password= body["password"]
         db.session.commit()
 
-        return jsonify(employee1.serialize()), 200
+        return jsonify(user1.serialize()), 200
 
     ###### GET REQUEST METHOD ######
 
     if request.method == 'GET':
-        employee1 = Employee.query.get(employee_id)
-        if employee1 is None:
+        user1 = User.query.get(user_id)
+        if user1 is None:
             raise APIException("User not found", status_code=404)
-        return jsonify(employee1.serialize()), 200
+        return jsonify(user1.serialize()), 200
     
     ###### DELETE METHOD ######
 
     if request.method == "DELETE":
-        employee1 = Employee.query.get(employee_id)
-        if employee1 is None:
+        user1 = User.query.get(user_id)
+        if user1 is None:
             raise APIException("User not found", status_code=404)
-        db.session.delete(employee1)
+        db.session.delete(user1)
         db.session.commit()
         return "ok", 200
 
     return "Invalid Method", 404
 
-@app.route('/employeeprofile', methods=['POST', 'GET'])
-def get_EmployeeProfile():
+@app.route('/userprofile', methods=['POST', 'GET'])
+def get_UserProfile():
 
-##### Create a EmployeeProfile and retrieve all EmployeeProfiles ######
+##### Create a UserProfile and retrieve all UserProfiles ######
 
     if request.method == 'POST':
         body = request.get_json()
@@ -121,21 +270,21 @@ def get_EmployeeProfile():
             raise APIException('You need to specify the full_name', status_code=400)
         if 'contact_info' not in body:
             raise APIException('You need to specify the email', status_code=400)
-        employeeprofile1 = EmployeeProfile(skills=body['skills'], contact_info = body['contact_info'])
-        db.session.add(employeeprofile1)
+        userprofile1 = UserProfile(skills=body['skills'], contact_info = body['contact_info'])
+        db.session.add(userprofile1)
         db.session.commit()
         return "ok", 200
     
     ##### GET REQUEST METHOD #####
 
     if request.method == 'GET':
-        all_employeeprofile = EmployeeProfile.query.all()
-        all_employeeprofile = list(map(lambda x: x.serialize(), all_employeeprofile))
-        return jsonify(all_employeeprofile), 200
+        all_userprofile = UserProfile.query.all()
+        all_userprofile = list(map(lambda x: x.serialize(), all_userprofile))
+        return jsonify(all_userprofile), 200
     return "Invalid Method", 404
 
-@app.route('/employeeprofile/<int:employeeprofile_id>', methods= ['PUT', 'GET', 'DELETE'])
-def get_single_employeeprofile(employeeprofile_id):
+@app.route('/userprofile/<int:userprofile_id>', methods= ['PUT', 'GET', 'DELETE'])
+def get_single_userprofile(userprofile_id):
 
     ##### REQUEST METHOD PUT #####
 
@@ -144,34 +293,34 @@ def get_single_employeeprofile(employeeprofile_id):
 
         if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
-        employeeprofile1 = EmployeeProfile.query.get(employeeprofile_id)
+        userprofile1 = UserProfile.query.get(userprofile_id)
        
-        if employeeprofile1 is None:
+        if userprofile1 is None:
             raise APIException("User not found", status_code=404)
         
         if "skills" in body:
-            employeeprofile1.skills= body["skills"]
+            userprofile1.skills= body["skills"]
         if "contact_info" in body:
-            employeeprofile1.contact_info= body["contact_info"]
+            userprofile1.contact_info= body["contact_info"]
         db.session.commit()
 
-        return jsonify(employeeprofile1.serialize()), 200
+        return jsonify(userprofile1.serialize()), 200
 
     ##### GET REQUEST METHOD ######
 
     if request.method == 'GET':
-        employeeprofile1 = Employee.query.get(employee_id)
-        if employeeprofile1 is None:
+        userprofile1 = User.query.get(user_id)
+        if userprofile1 is None:
             raise APIException("User not found", status_code=404)
-        return jsonify(employeeprofile1.serialize()), 200
+        return jsonify(userprofile1.serialize()), 200
     
     ##### DELETE METHHOD #####
 
     if request.method == "DELETE":
-        employeeprofile1 = Employeeprofile.query.get(employeeprofile_id)
-        if employeeprofile1 is None:
+        userprofile1 = Userprofile.query.get(userprofile_id)
+        if userprofile1 is None:
             raise APIException("User not found", status_code=404)
-        db.session.delete(employeeprofile1)
+        db.session.delete(userprofile1)
         db.session.commit()
         return "ok", 200
 
@@ -179,14 +328,14 @@ def get_single_employeeprofile(employeeprofile_id):
 
  ############################################################
  ############################################################
- #EMPLOYER
+ #COMPANY
  ############################################################
  ############################################################ 
 
-@app.route('/employer', methods=['POST', 'GET'])
-def get_Employer():
+@app.route('/company', methods=['POST', 'GET'])
+def get_Company():
 
-##### Create a Employer and retrieve all Employers ######
+##### Create a Company and retrieve all Companies ######
 
     if request.method == 'POST':
         body = request.get_json()
@@ -198,23 +347,23 @@ def get_Employer():
             raise APIException('You need to specify the email', status_code=400)
         if 'password' not in body:
             body['password'] = None
-        employer1 = Employer(full_name=body['full_name'], email = body['email'], password = body['password'])
-        db.session.add(employer1)
+        company1 = Company(full_name=body['full_name'], email = body['email'], password = body['password'])
+        db.session.add(company1)
         db.session.commit()
         return "ok", 200
     
     #### GET REQUEST METHOD #####
 
     if request.method == 'GET':
-        all_employer = Employer.query.all()
-        all_employer = list(map(lambda x: x.serialize(), all_employer))
-        return jsonify(all_employer), 200
+        all_company = Company.query.all()
+        all_company = list(map(lambda x: x.serialize(), all_company))
+        return jsonify(all_company), 200
     
     return "Invalid Method", 404
 
 
-@app.route('/employer/<int:employer_id>', methods= ['PUT', 'GET', 'DELETE'])
-def get_single_employer(employer_id):
+@app.route('/company/<int:company_id>', methods= ['PUT', 'GET', 'DELETE'])
+def get_single_company(company_id):
 
     #### #REQUEST METHOD PUT #####
 
@@ -223,45 +372,45 @@ def get_single_employer(employer_id):
 
         if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
-        employer1 = Employer.query.get(employer_id)
+        company1 = Company.query.get(company_id)
        
-        if employer1 is None:
+        if company1 is None:
             raise APIException("User not found", status_code=404)
         
         if "full_name" in body:
-            employer1.full_name= body["full_name"]
+            company1.full_name= body["full_name"]
         if "email" in body:
-            employer1.email= body["email"]
+            company1.email= body["email"]
         if "password" in body:
-            employer1.password= body["password"]
+            company1.password= body["password"]
         db.session.commit()
 
-        return jsonify(employer1.serialize()), 200
+        return jsonify(company1.serialize()), 200
 
     ##### GET REQUEST METHOD #####
 
     if request.method == 'GET':
-        employer1 = Employer.query.get(employer_id)
-        if employer1 is None:
+        company1 = Company.query.get(company_id)
+        if company1 is None:
             raise APIException("User not found", status_code=404)
-        return jsonify(employer1.serialize()), 200
+        return jsonify(company1.serialize()), 200
     
     ##### DELETE METHHOD ######
 
     if request.method == "DELETE":
-        employer1 = Employer.query.get(employer_id)
-        if employer1 is None:
+        company1 = Company.query.get(company_id)
+        if company1 is None:
             raise APIException("User not found", status_code=404)
-        db.session.delete(employer1)
+        db.session.delete(company1)
         db.session.commit()
         return "ok", 200
 
     return "Invalid Method", 404
 
-@app.route('/employerprofile', methods=['POST', 'GET'])
-def get_EmployerProfile():
+@app.route('/companyprofile', methods=['POST', 'GET'])
+def get_CompanyProfile():
 
-##### Create an EmployerProfile and retrieve all EmployerProfiles #####
+##### Create an Company Profile and retrieve all Company Profiles #####
 
     if request.method == 'POST':
         body = request.get_json()
@@ -269,22 +418,22 @@ def get_EmployerProfile():
             raise APIException("You need to specify the request body as a json object", status_code=400)
         if "company_info" not in body:
             raise APIException('You need to specify the full_name', status_code=400)
-        employerprofile1 = EmployerProfile(company_info=body['company_info'])
+        companyprofile1 = CompanyProfile(company_info=body['company_info'])
         #employerprofile1.profile = EmployerProfile(company_info=body['company_info'])
-        db.session.add(employerprofile1)
+        db.session.add(companyprofile1)
         db.session.commit()
         return "ok", 200
     
     ##### GET REQUEST METHOD ######
 
     if request.method == 'GET':
-        all_employerprofile = EmployerProfile.query.all()
-        all_employerprofile = list(map(lambda x: x.serialize(), all_employerprofile))
-        return jsonify(all_employerprofile), 200
+        all_companyprofile = CompanyProfile.query.all()
+        all_companyprofile = list(map(lambda x: x.serialize(), all_companyprofile))
+        return jsonify(all_companyprofile), 200
     return "Invalid Method", 404
 
-@app.route('/employerprofile/<int:employerprofile_id>', methods= ['PUT', 'GET', 'DELETE'])
-def get_single_employerprofile(employerprofile_id):
+@app.route('/companyprofile/<int:companyprofile_id>', methods= ['PUT', 'GET', 'DELETE'])
+def get_single_companyprofile(companyprofile_id):
 
     ##### REQUEST METHOD PUT ######
 
@@ -293,32 +442,32 @@ def get_single_employerprofile(employerprofile_id):
 
         if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
-        employerprofile1 = EmployerProfile.query.get(employerprofile_id)
+        companyprofile1 = CompanyProfile.query.get(companyprofile_id)
        
-        if employerprofile1 is None:
+        if companyprofile1 is None:
             raise APIException("User not found", status_code=404)
         
         if "company_info" in body:
-            employerprofile1.company_info= body["company_info"]
+            companyprofile1.company_info= body["company_info"]
         db.session.commit()
 
-        return jsonify(employerprofile1.serialize()), 200
+        return jsonify(companyprofile1.serialize()), 200
 
     ##### GET REQUEST METHOD #####
 
     if request.method == 'GET':
-        employerprofile1 = EmployerProfile.query.get(employer_id)
-        if employerprofile1 is None:
+        companyprofile1 = CompanyProfile.query.get(company_id)
+        if companyprofile1 is None:
             raise APIException("User not found", status_code=404)
-        return jsonify(employeeprofile1.serialize()), 200
+        return jsonify(companyprofile1.serialize()), 200
     
     ##### DELETE METHOD #####
 
     if request.method == "DELETE":
-        employerprofile1 = EmployerProfile.query.get(employerprofile_id)
-        if employerprofile1 is None:
+        companyprofile1 = CompanyProfile.query.get(companyprofile_id)
+        if companyprofile1 is None:
             raise APIException("User not found", status_code=404)
-        db.session.delete(employerprofile1)
+        db.session.delete(companyprofile1)
         db.session.commit()
         return "ok", 200
 
@@ -334,7 +483,7 @@ if __name__ == '__main__':
 
 ##################################################################
 ##################################################################
- #Job Posting (Employer)
+ #Job Posting (Company)
 ##################################################################
 ##################################################################
 
