@@ -7,7 +7,8 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
-from models import db, User, Company, CompanyProfile, UserProfile #JobPosting
+from models import db, User, Company, CompanyProfile, UserProfile, Login, Signup #JobPosting
+#from actions import add_user
 #from models import Person
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -31,7 +32,7 @@ def sitemap():
 
  ################################################################
  ################################################################
- #SINUP
+ #SIGNUP
  ################################################################
  ################################################################
 
@@ -180,7 +181,7 @@ def get_Login():
 
  ################################################################
  ################################################################
- #EMPLOYEE
+ #USER
  ################################################################
  ################################################################   
 
@@ -193,15 +194,18 @@ def get_User():
         body = request.get_json()
         if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
-        if "full_name" not in body:
-            raise APIException('You need to specify the full_name', status_code=400)
         if 'email' not in body:
             raise APIException('You need to specify the email', status_code=400)
         if 'password' not in body:
             body['password'] = None
-        user1 = User(full_name=body['full_name'], email = body['email'], password = body['password'])
-        db.session.add(user1)
-        db.session.commit()
+        if "re_password" not in body:
+            raise APIException('You need to specify the correct password', status_code=400)
+        if "username" not in body:
+            raise APIException('You need to specify the username', status_code=400)
+        if "skills" not in body:
+            raise APIException('You need to specify the skills', status_code=400)
+        
+        # add_user(body)
         return "ok", 200
     
     ###### GET REQUEST METHOD ######
@@ -226,13 +230,16 @@ def get_single_user(user_id):
        
         if user1 is None:
             raise APIException("User not found", status_code=404)
-        
-        if "full_name" in body:
-            user1.full_name= body["full_name"]
         if "email" in body:
             user1.email= body["email"]
         if "password" in body:
             user1.password= body["password"]
+        if "re_password" in body:
+            user1.re_password= body["re_password"]
+        if "username" in body:
+            user1.username= body["username"]
+        if "skills" in body:
+            user1.skills= body["skills"]
         db.session.commit()
 
         return jsonify(user1.serialize()), 200
@@ -341,13 +348,17 @@ def get_Company():
         body = request.get_json()
         if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
-        if "full_name" not in body:
-            raise APIException('You need to specify the full_name', status_code=400)
         if 'email' not in body:
             raise APIException('You need to specify the email', status_code=400)
         if 'password' not in body:
             body['password'] = None
-        company1 = Company(full_name=body['full_name'], email = body['email'], password = body['password'])
+        if "re_password" not in body:
+            raise APIException('You need to specify the correct password', status_code=400)
+        if "address" not in body:
+            raise APIException('You need to specify the address', status_code=400)
+        if "company_description" not in body:
+            raise APIException('You need to specify the description', status_code=400)
+        company1 = Company(email = body['email'], password = body['password'], re_password=body['re_password'], address=body['address'], company_description=body['company_description'], )
         db.session.add(company1)
         db.session.commit()
         return "ok", 200
@@ -376,13 +387,16 @@ def get_single_company(company_id):
        
         if company1 is None:
             raise APIException("User not found", status_code=404)
-        
-        if "full_name" in body:
-            company1.full_name= body["full_name"]
         if "email" in body:
             company1.email= body["email"]
         if "password" in body:
             company1.password= body["password"]
+        if "re_password" in body:
+            company1.re_password= body["re_password"]
+        if "username" in body:
+            company1.username= body["username"]
+        if "skills" in body:
+            company1.skills= body["skills"]
         db.session.commit()
 
         return jsonify(company1.serialize()), 200

@@ -36,18 +36,22 @@ class User(db.Model):
     __tablename__= "user"
     profile = relationship("UserProfile")
     id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(120), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=True, nullable=False)
+    re_password = db.Column(db.String(120), unique=False, nullable=False)
+    username = db.Column(db.String(120), unique=False, nullable=False)
+    skills = db.Column(db.String(120), unique=False, nullable=False)
     
     def __repr__(self):
         return '<User %r>' % self.full_name
     
     def serialize(self):
         return {
-            "full_name": self.full_name,
             "email": self.email,
             "password": self.password,
+            "re_password": self.re_password,
+            "username": self.username,
+            "skills": self.skills,
             "id": self.id
         }
 
@@ -69,22 +73,26 @@ class UserProfile(db.Model):
         }
         
 class Company(db.Model):
-    __tablename__= "comapny"
+    __tablename__= "company"
     id = db.Column(db.Integer, primary_key=True)
     #profile = db.relationship("CompanyProfile")
-    full_name = db.Column(db.String(120), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=True, nullable=False)
+    re_password = db.Column(db.String(120), unique=False, nullable=False)
+    address = db.Column(db.String(120), unique=False, nullable=False)
+    company_description = db.Column(db.String(120), unique=False, nullable=False)
     
     def __repr__(self):
         return '<Company %r>' % self.full_name
     
     def serialize(self):
         return {
-            "full_name": self.full_name,
             "email": self.email,
             #"profile": self.profile.serialize() if self.profile is not None else None,
             "password": self.password,
+            "re_password": self.fre_password,
+            "address": self.address,
+            "company_description": self.company_description,
             "id": self.id 
         }
 
