@@ -6,71 +6,71 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 db = SQLAlchemy()
 
-class Login(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=True, nullable=False)
+# class Login(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     email = db.Column(db.String(120), unique=True, nullable=False)
+#     password = db.Column(db.String(80), unique=True, nullable=False)
     
-    def __repr__(self):
-        return '<Login %r>' % self.username
-    def serialize(self):
-        return {
-            "email": self.email,
-            "password": self.password
-        }
+#     def __repr__(self):
+#         return '<Login %r>' % self.username
+#     def serialize(self):
+#         return {
+#             "email": self.email,
+#             "password": self.password
+#         }
 
-class Signup(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=True, nullable=False)
+# class Signup(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     email = db.Column(db.String(120), unique=True, nullable=False)
+#     password = db.Column(db.String(80), unique=True, nullable=False)
     
-    def __repr__(self):
-        return '<Signup %r>' % self.username
-    def serialize(self):
-        return {
-            "email": self.email,
-            "password": self.password
-        }
+#     def __repr__(self):
+#         return '<Signup %r>' % self.username
+#     def serialize(self):
+#         return {
+#             "email": self.email,
+#             "password": self.password
+#         }
 
 class User(db.Model):
-    __tablename__= "user"
-    profile = relationship("UserProfile")
+    # __tablename__= "user"
+    # profile = relationship("UserProfile")
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=True, nullable=False)
-    re_password = db.Column(db.String(120), unique=False, nullable=False)
-    username = db.Column(db.String(120), unique=False, nullable=False)
+    contact_info = db.Column(db.String(120), unique=False, nullable=False)
+    name = db.Column(db.String(120), unique=False, nullable=False)
     skills = db.Column(db.String(120), unique=False, nullable=False)
     
     def __repr__(self):
-        return '<User %r>' % self.full_name
+        return '<User %r>' % self.name
     
-    def serialize(self):
+    def serialize(self): 
         return {
             "email": self.email,
             "password": self.password,
-            "re_password": self.re_password,
-            "username": self.username,
-            "skills": self.skills,
-            "id": self.id
-        }
-
-class UserProfile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    skills = db.Column(db.String(250), unique=False, nullable=False)
-    contact_info = db.Column(db.String(250), unique=True, nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id'))
-
-    def __repr__(self):
-        return '<UserProfile %r>' % self.full_name
-    
-    def serialize(self):
-        return {
-            "skills": self.skills,
             "contact_info": self.contact_info,
-            "work_history": self.contact_info,
+            "name": self.name,
+            "skills": self.skills,
             "id": self.id
         }
+
+# class UserProfile(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     skills = db.Column(db.String(250), unique=False, nullable=False)
+#     contact_info = db.Column(db.String(250), unique=True, nullable=False)
+#     user_id = Column(Integer, ForeignKey('user.id'))
+
+#     def __repr__(self):
+#         return '<UserProfile %r>' % self.full_name
+    
+#     def serialize(self):
+#         return {
+#             "skills": self.skills,
+#             "contact_info": self.contact_info,
+#             "work_history": self.contact_info,
+#             "id": self.id
+#         }
         
 class Company(db.Model):
     __tablename__= "company"
@@ -78,37 +78,36 @@ class Company(db.Model):
     #profile = db.relationship("CompanyProfile")
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=True, nullable=False)
-    re_password = db.Column(db.String(120), unique=False, nullable=False)
     address = db.Column(db.String(120), unique=False, nullable=False)
-    company_description = db.Column(db.String(120), unique=False, nullable=False)
+    company_name = db.Column(db.String(120), unique=False, nullable=False)
+    company_description = db.Column(db.String(120), unique=False, nullable=True)
     
     def __repr__(self):
-        return '<Company %r>' % self.full_name
+        return '<Company %r>' % self.email
     
     def serialize(self):
         return {
             "email": self.email,
-            #"profile": self.profile.serialize() if self.profile is not None else None,
             "password": self.password,
-            "re_password": self.fre_password,
             "address": self.address,
+            "company_name": self.company_name,
             "company_description": self.company_description,
             "id": self.id 
         }
 
-class CompanyProfile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    company_info = db.Column(db.String(500), unique=True, nullable=False)
-    company_id = Column(Integer, ForeignKey('company.id'))
+# class CompanyProfile(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     company_info = db.Column(db.String(500), unique=True, nullable=False)
+#     company_id = Column(Integer, ForeignKey('company.id'))
 
-    def __repr__(self):
-        return '<CompanyProfile %r>' % self.full_name
+#     def __repr__(self):
+#         return '<CompanyProfile %r>' % self.full_name
     
-    def serialize(self):
-        return {
-            "company_info": self.skills,
-            "id": self.id
-        }
+#     def serialize(self):
+#         return {
+#             "company_info": self.skills,
+#             "id": self.id
+#         }
 
 # class JobPosting(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
