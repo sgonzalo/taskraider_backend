@@ -75,7 +75,6 @@ class User(db.Model):
 class Company(db.Model):
     __tablename__= "company"
     id = db.Column(db.Integer, primary_key=True)
-    #profile = db.relationship("CompanyProfile")
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=True, nullable=False)
     address = db.Column(db.String(120), unique=False, nullable=False)

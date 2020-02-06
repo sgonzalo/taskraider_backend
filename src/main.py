@@ -8,6 +8,11 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from models import db, User, Company, JobPosting 
+from flask_jwt_simple import (
+    JWTManager, jwt_required, create_jwt, get_jwt_identity
+)
+
+
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
@@ -15,6 +20,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
+#####JWT####
+app.config['JWT_SECRET_KEY'] = 'secret_key' 
+jwt = JWTManager(app)
+#######################
+
 
 ##### Handle/serialize errors like a JSON object #####
 
@@ -29,7 +39,38 @@ def sitemap():
     return generate_sitemap(app)
 
  
- 
+ ################################################
+# JWT
+################################################
+# Setup the Flask-JWT-Simple extension for example
+
+
+# Provide a method to create access tokens. The create_jwt()
+# function is used to actually generate the token
+@app.route('/login', methods=['POST'])
+def login():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    params = request.get_json()
+    email = params.get('email', None)
+    password = params.get('password', None)
+
+    if not email:
+        return jsonify({"msg": "Missing email in request"}), 400
+    if not password:
+        return jsonify({"msg": "Missing password in request"}), 400
+
+    # check for user in database
+    usercheck = User.query.filter_by(email=email, password=password).first()
+
+    # if user not found
+    if usercheck == None:
+        return jsonify({"msg": "Invalid credentials provided"}), 401
+
+    #if user found, Identity can be any data that is json serializable
+    ret = {'jwt': create_jwt(identity=email)}
+    return jsonify(ret), 200
 
  ################################################################
  ################################################################
@@ -38,6 +79,7 @@ def sitemap():
  ################################################################   
 
 @app.route('/user', methods=['POST', 'GET'])
+
 def get_User():
 
 ##### Create a USER and retrieve all Users #####
@@ -72,6 +114,7 @@ def get_User():
     return "Invalid Method", 404
 
 @app.route('/user/<int:user_id>', methods= ['PUT', 'GET', 'DELETE'])
+# @jwt_required
 def get_single_user(user_id):
 
     ###### REQUEST METHOD PUT ######
