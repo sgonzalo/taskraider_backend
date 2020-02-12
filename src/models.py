@@ -104,11 +104,12 @@ class JobPosting(db.Model):
     skills_needed = db.Column(db.String(500), unique=True, nullable=False)
     hours_expected = db.Column(db.String(50), unique=True, nullable=False)
     payment = db.Column(db.String(250), unique=True, nullable=False)
+    company = relationship(Company)
     company_id = Column(Integer, ForeignKey('company.id'))
     #createjobposting_id = Column(Integer, ForeignKey('createjobposting.id'))
 
     def __repr__(self):
-        return '<JobPosting %r>' % self.full_name
+        return '<JobPosting %r>' % self.job_title
     
     def serialize(self):
         return {
