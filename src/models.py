@@ -71,40 +71,17 @@ class User(db.Model):
 #             "work_history": self.contact_info,
 #             "id": self.id
 #         }
-        
-class Company(db.Model):
-    __tablename__= "company"
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=True, nullable=False)
-    address = db.Column(db.String(120), unique=False, nullable=False)
-    company_name = db.Column(db.String(120), unique=False, nullable=False)
-    company_description = db.Column(db.String(120), unique=False, nullable=True)
-    
-    def __repr__(self):
-        return '<Company %r>' % self.email
-    
-    def serialize(self):
-        return {
-            "email": self.email,
-            "password": self.password,
-            "address": self.address,
-            "company_name": self.company_name,
-            "company_description": self.company_description,
-            "id": self.id 
-        }
 
 
 class JobPosting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    job_title = db.Column(db.String(250), unique=True, nullable=False)
-    job_description= db.Column(db.String(500), unique=True, nullable=False)
-    zip_code = db.Column(db.String(50), unique=True, nullable=False)
-    job_date = db.Column(db.String(50), unique=True, nullable=False)
-    skills_needed = db.Column(db.String(500), unique=True, nullable=False)
-    hours_expected = db.Column(db.String(50), unique=True, nullable=False)
-    payment = db.Column(db.String(250), unique=True, nullable=False)
-    company = relationship(Company)
+    job_title = db.Column(db.String(250), unique=False, nullable=False)
+    job_description= db.Column(db.String(500), unique=False, nullable=False)
+    zip_code = db.Column(db.String(50), unique=False, nullable=False)
+    job_date = db.Column(db.String(50), unique=False, nullable=False)
+    skills_needed = db.Column(db.String(500), unique=False, nullable=False)
+    hours_expected = db.Column(db.String(50), unique=False, nullable=False)
+    payment = db.Column(db.String(250), unique=False, nullable=False)
     company_id = Column(Integer, ForeignKey('company.id'))
     #createjobposting_id = Column(Integer, ForeignKey('createjobposting.id'))
 
@@ -123,4 +100,27 @@ class JobPosting(db.Model):
             "id": self.id
         }
 
+        
+class Company(db.Model):
+    __tablename__= "company"
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)
+    address = db.Column(db.String(120), unique=False, nullable=False)
+    company_name = db.Column(db.String(120), unique=False, nullable=False)
+    company_description = db.Column(db.String(120), unique=False, nullable=True)
+    job_postings = relationship('JobPosting')
+    
+    def __repr__(self):
+        return '<Company %r>' % self.email
+    
+    def serialize(self):
+        return {
+            "email": self.email,
+            "password": self.password,
+            "address": self.address,
+            "company_name": self.company_name,
+            "company_description": self.company_description,
+            "id": self.id 
+        }
 

@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
-from utils import APIException, generate_sitemap
+from utils import APIException, generate_sitemap, send_email
 from models import db, User, Company, JobPosting 
 from flask_jwt_simple import (
     JWTManager, jwt_required, create_jwt, get_jwt_identity
@@ -179,7 +179,7 @@ def get_Company():
         body = request.get_json()
         if body is None:
             raise APIException("You need to specify the request body as a json object", status_code=400)
-        if 'email' not in body:
+        if 'email' not in body or body['email'] == '':
             raise APIException('You need to specify the email', status_code=400)
         if 'password' not in body:
             body['password'] = None
@@ -189,10 +189,15 @@ def get_Company():
             raise APIException('You need to specify the company_name', status_code=400)
         if "company_description" not in body:
             raise APIException('You need to specify the description', status_code=400)
+
+        _company = Company.query.filter_by(email=body['email']).first()
+        if(_company is not None):
+            raise APIException("Company already registered")
+
         company1 = Company(email = body['email'], password = body['password'], address=body['address'], company_name=body['company_name'],company_description=body['company_description'], )
         db.session.add(company1)
         db.session.commit()
-        return "ok", 200
+        return jsonify(company1.serialize()), 200
     
     #### GET REQUEST METHOD #####
 
@@ -284,10 +289,21 @@ def jobposting():
             raise APIException('You need to specify the hours_expected', status_code=400)
         if 'payment' not in body:
             raise APIException('You need to specify the payment', status_code=400)
+        if 'company_id' not in body:
+            raise APIException('You need to specify the company_id', status_code=400)
+
         jobposting1 = JobPosting(job_title=body['job_title'], job_description = body['job_description'], zip_code = body['zip_code'], job_date = body['job_date'], skills_needed = body['skills_needed'], hours_expected = body['hours_expected'], payment = body['payment'])
+        jobposting1.company_id = body['company_id']
         db.session.add(jobposting1)
+
+        _company = Company.query.get(body['company_id'])
+        db.session.merge(_company)
+
+        send_email(subject = "There is a new application", message="Contact on the way!", to=[_company.email] )
+        
+        
         db.session.commit()
-        return "ok", 200
+        return jsonify(jobposting1.serialize()), 200
     
     ##### GET REQUEST METHOD #####
 
@@ -330,6 +346,8 @@ def get_single_job_posting(jobposting_id):
             jobposting1.payment= body["payment"]
         
         db.session.commit()
+
+        send_email(subject = "New App", message="Your application has been received!", to=[_company.email] )
 
         return jsonify(jobposting1.serialize()), 200
 

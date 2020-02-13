@@ -18,6 +18,7 @@ flask-cors = "*"
 gunicorn = "*"
 mysqlclient = "*"
 flask-jwt-simple = "*"
+requests = "*"
 
 [requires]
 python_version = "3.6"
