@@ -71,7 +71,7 @@ def login():
     if usercheck is not None:
         usercheck = usercheck.serialize()
         
-    if usercheck is not None:
+    if companycheck is not None:
         companycheck = companycheck.serialize()
 
     #if user found, Identity can be any data that is json serializable
