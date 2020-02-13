@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
-from utils import APIException, generate_sitemap, send_email
+from utils import APIException, generate_sitemap, send_mail
 from models import db, User, Company, JobPosting 
 from flask_jwt_simple import (
     JWTManager, jwt_required, create_jwt, get_jwt_identity
@@ -208,7 +208,31 @@ def get_Company():
     
     return "Invalid Method", 404
 
+@app.route('/test_email', methods=['GET'])
+def test_send_email():
+    send_mail(["santiago.gonzalo360@gmail.com"], "A user has submitted a question", 
+    "Hello fellow Task Raider! Your application has been received! You will be contacted shortly!" " "
+     
+    )
+    return "Succesfully sent", 200
 
+@app.route('/test_email_two', methods=['GET'])
+def test_send_email2():
+    send_mail(["santiago.gonzalo360@gmail.com"], "A user has applied to your post!", 
+    "Test company email!" " "
+    
+     
+    )
+    return "Succesfully sent", 200
+# @app.route('/test_email_two', methods=['POST'])
+# def test_send_email2():
+#     body = request.get_json()
+
+
+#     send_mail(["santiago.gonzalo360@gmail.com"], "A user has submitted a question", 
+#     "Hello fellow Task Raider! Your application has been received! You will be contacted shortly!" " "
+#     )
+#     return "Succesfully sent", 200
 @app.route('/company/<int:company_id>', methods= ['PUT', 'GET', 'DELETE'])
 def get_single_company(company_id):
 
@@ -299,7 +323,7 @@ def jobposting():
         _company = Company.query.get(body['company_id'])
         db.session.merge(_company)
 
-        send_email(subject = "There is a new application", message="Contact on the way!", to=[_company.email] )
+        # send_email(subject = "There is a new application", message="Contact on the way!", to=[_company.email] )
         
         
         db.session.commit()
@@ -347,7 +371,7 @@ def get_single_job_posting(jobposting_id):
         
         db.session.commit()
 
-        send_email(subject = "New App", message="Your application has been received!", to=[_company.email] )
+        # send_email(subject = "New App", message="Your application has been received!", to=[_company.email] )
 
         return jsonify(jobposting1.serialize()), 200
 

@@ -37,17 +37,30 @@ def generate_sitemap(app):
         <h1>Hello Rigo!!</h1>
         This is your api home, remember to specify a real endpoint path like: <ul style="text-align: left;">"""+links_html+"</ul></div>"
 
+def send_mail(emails=[], subject='Empty Subject', content=''):
+    if isinstance(emails, list) is False:
+        emails = [emails]
+    key =  os.environ.get('MAILGUN_API_KEY')
+    domain =  os.environ.get('MAILGUN_DOMAIN')
+    return requests.post(
+        "https://api.mailgun.net/v3/"+domain+"/messages",
+        auth=("api", key),
+        data={"from": "Task Raider <mailgun@"+domain+">",
+              "to": emails,
+              "subject": subject,
+              "text": content})
 
-def send_email(subject="", message="", to=[]):
-    respo = requests.post(
-		"https://api.mailgun.net/v3/taskraider/messages",
-		auth=("api", os.getenv('MAILGUN_API_KEY')),
-		data={
-            "from": "sandbox04f6e2ea0bf34e5e9b71d372ccd321e8.mailgun.org",
-			"to": to,
-			"subject": subject,
-			"text": message
-        }
-    )
-    print(str(respo))
-    return respo
+
+# def send_email(subject="", message="", to=[]):
+#     respo = requests.post(
+# 		"https://api.mailgun.net/v3/taskraider/messages",
+# 		auth=("api", os.getenv('MAILGUN_API_KEY')),
+# 		data={
+#             "from": "sandbox04f6e2ea0bf34e5e9b71d372ccd321e8.mailgun.org",
+# 			"to": to,
+# 			"subject": subject,
+# 			"text": message
+#         }
+#     )
+#     print(str(respo))
+#     return respo
