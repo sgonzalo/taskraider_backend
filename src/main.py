@@ -63,13 +63,13 @@ def login():
 
     # check for user in database
     usercheck = User.query.filter_by(email=email, password=password).first()
-
+    companycheck = Company.query.filter_by(email=email, password=password).first()
     # if user not found
-    if usercheck == None:
+    if usercheck is None and companycheck is None:
         return jsonify({"msg": "Invalid credentials provided"}), 401
 
     #if user found, Identity can be any data that is json serializable
-    ret = {'jwt': create_jwt(identity=email)}
+    ret = {'jwt': create_jwt(identity=email), user: usercheck, company: companycheck}
     return jsonify(ret), 200
 
  ################################################################
