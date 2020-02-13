@@ -69,7 +69,7 @@ def login():
         return jsonify({"msg": "Invalid credentials provided"}), 401
 
     #if user found, Identity can be any data that is json serializable
-    ret = {'jwt': create_jwt(identity=email), user: usercheck, company: companycheck}
+    ret = {'jwt': create_jwt(identity=email), 'user': usercheck, 'company': companycheck}
     return jsonify(ret), 200
 
  ################################################################
