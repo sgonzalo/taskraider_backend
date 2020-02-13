@@ -68,8 +68,14 @@ def login():
     if usercheck is None and companycheck is None:
         return jsonify({"msg": "Invalid credentials provided"}), 401
 
+    if usercheck is not None:
+        usercheck = usercheck.serialize()
+        
+    if usercheck is not None:
+        companycheck = companycheck.serialize()
+
     #if user found, Identity can be any data that is json serializable
-    ret = {'jwt': create_jwt(identity=email), 'user': usercheck, 'company': companycheck}
+    ret = {'jwt': create_jwt(identity=email), 'user': usercheck , 'company': companycheck }
     return jsonify(ret), 200
 
  ################################################################
